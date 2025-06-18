@@ -1,0 +1,19 @@
+{
+  "name": "atlas-engine",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "Multi-layered world-building simulation engine",
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  }
+}
