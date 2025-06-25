@@ -1,3 +1,4 @@
+import { createRegion } from 'factories';
 import { Region, Time } from 'simulation';
 
 export class World {
@@ -17,6 +18,9 @@ export class World {
   }
 
   public addNewRegion(origin?: Region, baseSize = 1.0): void {
+    const r = createRegion(origin);
+    this.regions.add(r);
+    console.log(`Created ${r.environment} region ${this.name}.${r.id}`);
   }
 
   public toJSON() {
