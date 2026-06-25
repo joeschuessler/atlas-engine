@@ -1,6 +1,9 @@
 import { Biome, Environment } from "types";
 
-export const biomeEnvironments: Record<Biome, Environment[]> = 
+// TBI (to-be-implemented): the Biome→Environment ladder mapping. DORMANT — no
+// consumer reads this yet. Intended consumer: biome-sensitive simulation logic.
+// See `types/Biome.ts` and CONTEXT.md.
+export const biomeEnvironments: Record<Biome, Environment[]> =
 {
   freshwater: ["pond","river","lake"],
   marine: ["coastal","ocean","coral_reef","estuary","mangrove"],

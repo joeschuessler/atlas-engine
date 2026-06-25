@@ -9,19 +9,18 @@ export type GeologicalFeature =
   | "limestone_column"  // Unique karst formations; indicative of ancient seabeds
   | "monolith"          // Unusual stone formation; landmark or cultural site
   | "tar_pit"           // Natural asphalt pool; may trap creatures, preserve fossils
-  | "ravine"
-  | "butte"
-  | "glacier"
-  | "salt_lake"
-  | "coral_shelf"
-  | "kelp_forest"
-  | "mangrove_thicket"
-  | "floodplain"
-  | "terrace"
-  | "grove"
-  | "clearing"
-  | "hot_spring"      // Geothermal spring; may raise local fertility/moisture
-  | "glacier"         // Persistent body of ice; source of rivers or climate effect
-  | "oasis"           // Isolated fertile zone, usually in desert
-  | "salt_lick"       // Natural mineral deposit frequented by fauna
-  | "spring"          // Natural water emergence from subsurface
+  | "ravine"            // Narrow, steep-sided valley; may affect local microclimate
+  | "butte"             // Isolated elevated landform with steep sides
+  | "salt_lake"         // Endorheic basin filled with salt
+  | "coral_shelf"       // Submerged platform of coral formations
+  | "kelp_forest"       // Underwater forest of large brown algae
+  | "mangrove_thicket"  // Dense coastal vegetation adapted to saline conditions
+  | "floodplain"        // Flat area subject to periodic flooding
+  | "terrace"           // Level or nearly level area, often with steep sides
+  | "grove"             // Small forest or group of trees
+  | "clearing"          // Open area in a forest or woodland
+  | "hot_spring"        // Geothermal spring; may raise local fertility/moisture
+  | "glacier"           // Persistent body of ice; source of rivers or climate effect
+  | "oasis"             // Isolated fertile zone, usually in desert
+  | "salt_lick"         // Natural mineral deposit frequented by fauna
+  | "spring"            // Natural water emergence from subsurface
