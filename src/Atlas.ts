@@ -38,14 +38,19 @@ export class Atlas {
     };
   }
 
+  private static worldsFromJSON(data: any): Map<string, World> {
+    const worlds = new Map<string, World>();
+    for (const worldData of data.worlds) {
+      const world = World.fromJSON(worldData);
+      worlds.set(String(world.name), world);
+    }
+    return worlds;
+  }
+
   static fromJSON(data: any): Atlas {
     const atlas = new Atlas();
     atlas.time = Time.fromJSON(data.time);
-    atlas.worlds = new Map<string, World>();
-    for (const worldData of data.worlds) {
-      const world = World.fromJSON(worldData);
-      atlas.worlds.set(String(world.name), world);
-    }
+    atlas.worlds = Atlas.worldsFromJSON(data);
     return atlas;
   }
 
@@ -55,6 +60,20 @@ export class Atlas {
     const savepath = path.join(dir, filename);
     fs.writeFileSync(savepath, JSON.stringify(this.toJSON(), null, 2));
     console.log(`Saved to ${savepath}`);
+  }
+
+  /** Load Atlas state from saves/<filename> in place, replacing the current worlds & time. */
+  loadFromFile(filename: string) {
+    const savepath = path.join(path.resolve('saves'), filename);
+    if (!fs.existsSync(savepath)) { console.log(`No save found at ${savepath}`); return; }
+    const raw = JSON.parse(fs.readFileSync(savepath, 'utf-8'));
+    this.time = Time.fromJSON(raw.time);
+    this.worlds = Atlas.worldsFromJSON(raw);
+    this.activeWorldName = [...this.worlds.keys()][0];
+    console.log(
+      `Loaded ${this.worlds.size} world(s) from ${savepath}.` +
+      (this.activeWorldName ? ` Active: '${this.activeWorldName}'.` : '')
+    );
   }
 
   async run(): Promise<void> {
@@ -168,6 +187,10 @@ export class Atlas {
         this.saveToFile(args[0] ?? 'manual.save');
         break;
 
+      case 'load':
+        this.loadFromFile(args[0] ?? 'manual.save');
+        break;
+
       default:
         console.log(`Unknown command: '${cmd}'. Type 'help' or '?'.`);
     }
@@ -233,6 +256,7 @@ export class Atlas {
       '  world              summary of the active world',
       '  tick / <Enter>     advance time one tick',
       '  save [file]        save Atlas state to saves/<file>',
+      '  load [file]        load Atlas state from saves/<file>',
       '  help / ?           show this help',
       '  quit               exit',
     ].join('\n'));

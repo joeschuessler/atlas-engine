@@ -65,12 +65,20 @@ export class World {
 
   static fromJSON(data: any): World {
     const world = new World(data.name);
-    world.regions = new Set(
-      data.regions.map((regionData: any) => Region.fromJSON(regionData))
-    );
-    // NOTE: regions deserialize with only `neighborIDs` populated; relinking them into
-    // the `neighbors` graph (and a `load` command) is the next slice's save/load round-trip.
-    world.cradle = [...world.regions].find(r => r.id === data.cradleId);
+    const regions: Region[] = data.regions.map((regionData: any) => Region.fromJSON(regionData));
+    world.regions = new Set(regions);
+
+    // Relink the adjacency graph: regions deserialize with only `neighborIDs` staged,
+    // so reconnect each to its neighbors now that every Region object exists.
+    const byId = new Map<number, Region>(regions.map(r => [r.id, r]));
+    for (const region of regions) {
+      for (const neighborId of region.neighborIDs) {
+        const neighbor = byId.get(neighborId);
+        if (neighbor) region.connect(neighbor); // connect() is bidirectional + Set-backed, so idempotent
+      }
+    }
+
+    world.cradle = byId.get(data.cradleId);
     return world;
   }
 }
