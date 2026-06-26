@@ -1,5 +1,5 @@
 import { writeFileSync, readFileSync } from "fs";
-import { Atlas } from 'engine';
+import { Atlas } from 'Atlas';
 
 export function saveToFile(atlas: Atlas, path: string): void {
   writeFileSync(path, JSON.stringify(atlas.toJSON(), null, 2));

@@ -5,6 +5,17 @@ import { generateGeoData, generateGeoDataFromScratch } from "factories";
 import { regionAdjacencyBias, regionSizes } from "data/regionData";
 import { pickByWeight, pickFromArray, randomInRange } from "utils/helpers";
 
+/**
+ * Plant a world's Cradle of Life: the unique, from-scratch seed Region every world
+ * is grown outward from. Its Size is pinned at 1.00 by definition — the Cradle is the
+ * literal anchor of the Size scale, so it is not subject to the per-Environment roll.
+ */
+export function createCradle(): Region {
+  const environment: Environment = pickFromArray(ALL_ENVIRONMENTS);
+  const geoData: IGeography = generateGeoDataFromScratch(environment);
+  return new Region(Region.generateID(), environment, 1.0, geoData);
+}
+
 export function createRegion(origin?: Region) {
   const newEnvironment: Environment = origin 
     ? pickAdjacentEnvironment(origin.environment)

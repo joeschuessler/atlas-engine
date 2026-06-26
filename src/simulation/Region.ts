@@ -28,6 +28,7 @@ export class Region {
     this.environment = environment;
     this.size = size;
     this.id = id ?? Region.generateID();
+    Region.usedIDs.add(this.id); // reserve, whether generated or supplied (e.g. from JSON)
     this.name = name;
     this.geography = geoData ?? generateGeoDataFromScratch(environment);
     //this.ecology = ecoData ?? generateEcoDataFromScratch(environment);
@@ -36,7 +37,10 @@ export class Region {
 
   static generateID(): number {
     for (let i = 1; i <= 999999; i++) {
-      if (!Region.usedIDs.has(i)) return i;
+      if (!Region.usedIDs.has(i)) {
+        Region.usedIDs.add(i);
+        return i;
+      }
     }
     throw new Error("Cannot initialize new Region. No IDs left in pool!");
   }
