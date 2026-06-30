@@ -1,6 +1,7 @@
 import { createCradle, createRegion } from 'factories';
 import { Region } from 'simulation';
 import { pickFromArray } from 'utils/helpers';
+import { SeededRng, randomSeed } from 'utils/rng';
 
 export class World {
   private tickCount = 0;
@@ -8,10 +9,15 @@ export class World {
   public name: String;
   /** The world-unique Cradle of Life: the seed Region (Size 1.00) all growth traces back to. */
   public cradle?: Region;
+  /** The seed this world's geography was grown from — recorded so the world is reproducible. */
+  public readonly seed: number;
+  private rng: SeededRng;
 
-  constructor(name: String) {
+  constructor(name: String, seed: number = randomSeed(), resumeDraws = 0) {
     this.name = name;
     this.regions = new Set<Region>();
+    this.seed = seed >>> 0;
+    this.rng = new SeededRng(this.seed, resumeDraws);
   }
 
   public tick(): void {
@@ -24,7 +30,7 @@ export class World {
    */
   public plantCradle(): Region {
     if (this.cradle) return this.cradle;
-    const cradle = createCradle();
+    const cradle = createCradle(this.rng.next);
     this.cradle = cradle;
     this.regions.add(cradle);
     return cradle;
@@ -39,8 +45,8 @@ export class World {
     if (!this.cradle) this.plantCradle();
     const grown: Region[] = [];
     for (let i = 0; i < count; i++) {
-      const origin = pickFromArray([...this.regions]);
-      const region = createRegion(origin);
+      const origin = pickFromArray([...this.regions], this.rng.next);
+      const region = createRegion(origin, this.rng.next);
       origin.connect(region);
       this.regions.add(region);
       grown.push(region);
@@ -58,13 +64,15 @@ export class World {
   public toJSON() {
     return {
       name: this.name,
+      seed: this.seed,
+      draws: this.rng.draws, // resume point, so post-load growth stays deterministic
       cradleId: this.cradle?.id ?? null,
       regions: Array.from(this.regions).map(r => r.toJSON())
     };
   }
 
   static fromJSON(data: any): World {
-    const world = new World(data.name);
+    const world = new World(data.name, data.seed ?? randomSeed(), data.draws ?? 0);
     const regions: Region[] = data.regions.map((regionData: any) => Region.fromJSON(regionData));
     world.regions = new Set(regions);
 

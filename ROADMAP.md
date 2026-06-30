@@ -22,7 +22,7 @@ That shapes every priority below:
   relative Size), JSON world export, tick loop.
 - Domain model documented: `CONTEXT.md` glossary + `docs/adr/0001`, `docs/adr/0002`.
 
-## Phase 1 — Legibility & tool-feel *(next)*
+## Phase 1 — Legibility & tool-feel *(done)*
 
 Convert "it runs and prints logs" into "a person can explore a generated world."
 
@@ -37,7 +37,7 @@ Convert "it runs and prints logs" into "a person can explore a generated world."
 - **Seeded determinism** — thread a seed through generation so worlds are reproducible
   ("here's my world's seed"). Small change, strong signal.
 
-## Phase 2 — Web UI *(builds directly on Phase 1's data)*
+## Phase 2 — Web UI *(next; builds directly on Phase 1's data)*
 
 - **Obsidian-style graph view** — render regions as nodes in a force-directed graph of
   the adjacency ("magnet") model. Renders the *same* data Phase 1 makes legible, just a

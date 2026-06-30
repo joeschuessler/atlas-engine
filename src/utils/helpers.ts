@@ -1,21 +1,22 @@
 import { Biome, Environment } from "types";
 
-export function pickFromArray<T>(arr: T[]): T
+export function pickFromArray<T>(arr: T[], rng: () => number = Math.random): T
 {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rng() * arr.length)];
 }
 
 export function pickByWeight<T extends string>(
   weights: Partial<Record<T, number>>,
+  rng: () => number = Math.random,
   label?: string
 ): T {
   const options = Object.entries(weights) as [T, number][];
 
   //Shuffle for fairness among equal-weight options
-  options.sort(() => Math.random() - 0.5);
+  options.sort(() => rng() - 0.5);
 
   const weightSum = options.reduce((sum, [,w]) => sum + w, 0);
-  const roll = Math.random() * weightSum;
+  const roll = rng() * weightSum;
 
   let cumulative = 0;
   for (const [key, weight] of options) {
@@ -26,6 +27,6 @@ export function pickByWeight<T extends string>(
   throw new Error(`pickWeighted${label ? ` [${label}]` : ''}: failed with weights: ${JSON.stringify(weights)}`);
 }
 
-export function randomInRange(min: number, max: number): number {
-  return ((max - min) * Math.random()) + min;
+export function randomInRange(min: number, max: number, rng: () => number = Math.random): number {
+  return ((max - min) * rng()) + min;
 }

@@ -1,4 +1,5 @@
 import { Region, Time, World } from "simulation";
+import { resolveSeed } from "utils/rng";
 import * as fs from "fs";
 import * as path from "path";
 import readline from "readline/promises";
@@ -115,17 +116,19 @@ export class Atlas {
       case 'new':
         if (args[0] === 'world') {
           const name = args[1];
-          if (!name) { console.log('Usage: new world <name>'); break; }
+          if (!name) { console.log('Usage: new world <name> [seed]'); break; }
           if (this.worlds.has(name)) {
             this.activeWorldName = name;
             console.log(`World '${name}' already exists — now active.`);
             break;
           }
-          this.worlds.set(name, new World(name));
+          const seed = args[2] !== undefined ? resolveSeed(args[2]) : undefined;
+          const world = new World(name, seed);
+          this.worlds.set(name, world);
           this.activeWorldName = name;
-          console.log(`Created world '${name}' (now active).`);
+          console.log(`Created world '${name}' (seed ${world.seed}, now active).`);
         } else {
-          console.log("Usage: new world <name>");
+          console.log("Usage: new world <name> [seed]");
         }
         break;
 
@@ -235,6 +238,7 @@ export class Atlas {
 
   private renderWorldSummary(w: World) {
     console.log(`World '${w.name}'`);
+    console.log(`  seed      ${w.seed}`);
     console.log(`  regions   ${w.regions.size}`);
     console.log(`  cradle    ${w.cradle ? `#${w.cradle.id} [${w.cradle.environment}]` : '(unplanted)'}`);
     const counts = new Map<string, number>();
@@ -247,7 +251,7 @@ export class Atlas {
   private printHelp() {
     console.log([
       'Atlas commands:',
-      '  new world <name>   create & activate a world',
+      '  new world <name> [seed]   create & activate a world (optional reproducible seed)',
       '  use <name>         switch active world',
       '  worlds             list all worlds',
       '  grow [n]           grow n regions outward (plants the Cradle first)',

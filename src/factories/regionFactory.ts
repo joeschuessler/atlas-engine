@@ -10,39 +10,39 @@ import { pickByWeight, pickFromArray, randomInRange } from "utils/helpers";
  * is grown outward from. Its Size is pinned at 1.00 by definition — the Cradle is the
  * literal anchor of the Size scale, so it is not subject to the per-Environment roll.
  */
-export function createCradle(): Region {
-  const environment: Environment = pickFromArray(ALL_ENVIRONMENTS);
-  const geoData: IGeography = generateGeoDataFromScratch(environment);
+export function createCradle(rng: () => number = Math.random): Region {
+  const environment: Environment = pickFromArray(ALL_ENVIRONMENTS, rng);
+  const geoData: IGeography = generateGeoDataFromScratch(environment, rng);
   return new Region(Region.generateID(), environment, 1.0, geoData);
 }
 
-export function createRegion(origin?: Region) {
-  const newEnvironment: Environment = origin 
-    ? pickAdjacentEnvironment(origin.environment)
-    : pickFromArray(ALL_ENVIRONMENTS);
+export function createRegion(origin?: Region, rng: () => number = Math.random) {
+  const newEnvironment: Environment = origin
+    ? pickAdjacentEnvironment(origin.environment, rng)
+    : pickFromArray(ALL_ENVIRONMENTS, rng);
   const newGeoData: IGeography = origin
-    ? generateGeoData(origin, newEnvironment)
-    : generateGeoDataFromScratch(newEnvironment);
+    ? generateGeoData(origin, newEnvironment, rng)
+    : generateGeoDataFromScratch(newEnvironment, rng);
   //const newEcoData: IEcology = generateEcoData(origin.ecology);
   //const newResourceData: INaturalResources = generateResourceData(origin.resources);
   //tweakEnvironment(newEnvironment);
   return new Region(
     Region.generateID(),
     newEnvironment,
-    generateEnvironmentSize(newEnvironment),
+    generateEnvironmentSize(newEnvironment, rng),
     newGeoData
   );
 }
 
-function pickAdjacentEnvironment(origin: Environment): Environment {
+function pickAdjacentEnvironment(origin: Environment, rng: () => number = Math.random): Environment {
   const options = regionAdjacencyBias[origin];
   if (!options || Object.keys(options).length === 0) {
     throw new Error(`No adjacency options defined for ${origin}`);
   }
-  return pickByWeight(options, `${origin} adjacency`);
+  return pickByWeight(options, rng, `${origin} adjacency`);
 }
 
-function generateEnvironmentSize(env: Environment): number {
+function generateEnvironmentSize(env: Environment, rng: () => number = Math.random): number {
   const [min, max] = regionSizes[env];
-  return randomInRange(min,max);
+  return randomInRange(min, max, rng);
 }
